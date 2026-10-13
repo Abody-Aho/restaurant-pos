@@ -61,7 +61,7 @@ class DashboardPage extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 1.6,
+              childAspectRatio: 2.8,
               children: [
                 _buildStatCard(
                   title: 'إجمالي المبيعات',

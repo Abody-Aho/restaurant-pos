@@ -343,7 +343,7 @@ class MenuManagementPage extends ConsumerWidget {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
-                  childAspectRatio: 1.1,
+                  childAspectRatio: 2.2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),

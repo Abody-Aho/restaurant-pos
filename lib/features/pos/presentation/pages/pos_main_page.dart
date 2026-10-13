@@ -153,7 +153,7 @@ class PosMainPage extends ConsumerWidget {
                                           horizontal: 20, vertical: 8),
                                       gridDelegate:
                                           const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
+                                        crossAxisCount: 6,
                                         childAspectRatio: 0.95,
                                         crossAxisSpacing: 16,
                                         mainAxisSpacing: 16,
