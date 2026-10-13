@@ -1,3 +1,5 @@
+import com.android.build.gradle.BaseExtension
+
 allprojects {
     repositories {
         google()
@@ -14,6 +16,16 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+}
+
+subprojects {
+    if (project.name != "app" && !project.state.executed) {
+        afterEvaluate {
+            (project.extensions.findByName("android") as? BaseExtension)?.apply {
+                ndkVersion = "29.0.14033849"
+            }
+        }
+    }
 }
 
 subprojects {
