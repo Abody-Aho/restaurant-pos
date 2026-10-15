@@ -53,15 +53,24 @@ class MenuManagementPage extends ConsumerWidget {
     );
   }
 
-  void _showItemFormDialog(BuildContext context, WidgetRef ref, {Item? existingItem}) {
+  void _showItemFormDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    Item? existingItem,
+  }) {
     final themeState = ref.read(themeSettingsProvider);
     final primaryColor = themeState.accentColor.color;
     final categories = ref.read(menuNotifierProvider).categories;
 
-    final nameController = TextEditingController(text: existingItem?.name ?? '');
-    final priceController =
-        TextEditingController(text: existingItem != null ? '${existingItem.basePrice}' : '');
-    String? selectedCatId = existingItem?.categoryId ?? (categories.isNotEmpty ? categories.first.id : null);
+    final nameController = TextEditingController(
+      text: existingItem?.name ?? '',
+    );
+    final priceController = TextEditingController(
+      text: existingItem != null ? '${existingItem.basePrice}' : '',
+    );
+    String? selectedCatId =
+        existingItem?.categoryId ??
+        (categories.isNotEmpty ? categories.first.id : null);
     String? imagePath = existingItem?.imagePath;
     bool isTopSeller = existingItem?.isTopSeller ?? false;
 
@@ -75,7 +84,9 @@ class MenuManagementPage extends ConsumerWidget {
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: Text(existingItem == null ? 'إضافة صنف جديد' : 'تعديل الصنف'),
+            title: Text(
+              existingItem == null ? 'إضافة صنف جديد' : 'تعديل الصنف',
+            ),
             content: SizedBox(
               width: 550,
               child: SingleChildScrollView(
@@ -111,7 +122,9 @@ class MenuManagementPage extends ConsumerWidget {
                     const SizedBox(height: 12),
                     TextField(
                       controller: priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: const InputDecoration(
                         labelText: 'السعر الأساسي',
                         border: OutlineInputBorder(),
@@ -126,7 +139,9 @@ class MenuManagementPage extends ConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: () async {
                             final picker = ImagePicker();
-                            final picked = await picker.pickImage(source: ImageSource.gallery);
+                            final picked = await picker.pickImage(
+                              source: ImageSource.gallery,
+                            );
                             if (picked != null) {
                               setState(() => imagePath = picked.path);
                             }
@@ -136,7 +151,10 @@ class MenuManagementPage extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         if (imagePath != null)
-                          const Text('تم اختيار صورة ✓', style: TextStyle(color: AppColors.success)),
+                          const Text(
+                            'تم اختيار صورة ✓',
+                            style: TextStyle(color: AppColors.success),
+                          ),
                       ],
                     ),
 
@@ -149,33 +167,46 @@ class MenuManagementPage extends ConsumerWidget {
                     ),
 
                     const Divider(),
-                    const Text('الأحجام (Sizes)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'الأحجام (Sizes)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     _buildOptionGroupManager(
                       groupName: 'size',
                       options: sizes,
                       primaryColor: primaryColor,
                       onAdd: (opt) => setState(() => sizes.add(opt)),
-                      onRemove: (id) => setState(() => sizes.removeWhere((o) => o.id == id)),
+                      onRemove: (id) =>
+                          setState(() => sizes.removeWhere((o) => o.id == id)),
                     ),
 
                     const SizedBox(height: 12),
-                    const Text('النكهات (Flavors)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'النكهات (Flavors)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     _buildOptionGroupManager(
                       groupName: 'flavor',
                       options: flavors,
                       primaryColor: primaryColor,
                       onAdd: (opt) => setState(() => flavors.add(opt)),
-                      onRemove: (id) => setState(() => flavors.removeWhere((o) => o.id == id)),
+                      onRemove: (id) => setState(
+                        () => flavors.removeWhere((o) => o.id == id),
+                      ),
                     ),
 
                     const SizedBox(height: 12),
-                    const Text('الإضافات (Extras)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'الإضافات (Extras)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     _buildOptionGroupManager(
                       groupName: 'extra',
                       options: extras,
                       primaryColor: primaryColor,
                       onAdd: (opt) => setState(() => extras.add(opt)),
-                      onRemove: (id) => setState(() => extras.removeWhere((o) => o.id == id)),
+                      onRemove: (id) =>
+                          setState(() => extras.removeWhere((o) => o.id == id)),
                     ),
                   ],
                 ),
@@ -191,12 +222,16 @@ class MenuManagementPage extends ConsumerWidget {
                 onPressed: () async {
                   if (nameController.text.trim().isEmpty ||
                       priceController.text.trim().isEmpty ||
-                      selectedCatId == null) return;
+                      selectedCatId == null)
+                    return;
 
-                  final basePrice = double.tryParse(priceController.text.trim()) ?? 0.0;
+                  final basePrice =
+                      double.tryParse(priceController.text.trim()) ?? 0.0;
                   final itemId = existingItem?.id ?? uuid.v4();
 
-                  final allOptions = [...sizes, ...flavors, ...extras].map((opt) {
+                  final allOptions = [...sizes, ...flavors, ...extras].map((
+                    opt,
+                  ) {
                     return opt.copyWith(itemId: itemId);
                   }).toList();
 
@@ -213,12 +248,17 @@ class MenuManagementPage extends ConsumerWidget {
                   if (existingItem == null) {
                     await ref.read(menuNotifierProvider.notifier).addItem(item);
                   } else {
-                    await ref.read(menuNotifierProvider.notifier).updateItem(item);
+                    await ref
+                        .read(menuNotifierProvider.notifier)
+                        .updateItem(item);
                   }
 
                   if (dialogCtx.mounted) Navigator.pop(dialogCtx);
                 },
-                child: const Text('حفظ التغييرات', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'حفظ التغييرات',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -253,7 +293,9 @@ class MenuManagementPage extends ConsumerWidget {
             Expanded(
               child: TextField(
                 controller: optNameCtrl,
-                decoration: const InputDecoration(hintText: 'الاسم (مثل: كبير / دجاج / جبن)'),
+                decoration: const InputDecoration(
+                  hintText: 'الاسم (مثل: كبير / دجاج / جبن)',
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -270,13 +312,15 @@ class MenuManagementPage extends ConsumerWidget {
               onPressed: () {
                 if (optNameCtrl.text.trim().isEmpty) return;
                 final mod = double.tryParse(optPriceCtrl.text.trim()) ?? 0.0;
-                onAdd(ItemOption(
-                  id: uuid.v4(),
-                  itemId: '',
-                  groupName: groupName,
-                  optionName: optNameCtrl.text.trim(),
-                  priceModifier: mod,
-                ));
+                onAdd(
+                  ItemOption(
+                    id: uuid.v4(),
+                    itemId: '',
+                    groupName: groupName,
+                    optionName: optNameCtrl.text.trim(),
+                    priceModifier: mod,
+                  ),
+                );
                 optNameCtrl.clear();
                 optPriceCtrl.clear();
               },
@@ -376,7 +420,7 @@ class MenuManagementPage extends ConsumerWidget {
                               ),
                               Switch(
                                 value: item.isActive,
-                                activeColor: primaryColor,
+                                activeThumbColor: primaryColor,
                                 onChanged: (val) {
                                   ref
                                       .read(menuNotifierProvider.notifier)
@@ -386,7 +430,10 @@ class MenuManagementPage extends ConsumerWidget {
                             ],
                           ),
                           Text(
-                            CurrencyFormatter.format(item.basePrice, currency: restaurantInfo.currency),
+                            CurrencyFormatter.format(
+                              item.basePrice,
+                              currency: restaurantInfo.currency,
+                            ),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -396,7 +443,10 @@ class MenuManagementPage extends ConsumerWidget {
                           const SizedBox(height: 6),
                           Text(
                             'الأحجام: ${item.sizes.length} | النكهات: ${item.flavors.length} | الإضافات: ${item.extras.length}',
-                            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textMuted,
+                            ),
                           ),
                           const Spacer(),
                           Row(
@@ -404,16 +454,212 @@ class MenuManagementPage extends ConsumerWidget {
                             children: [
                               IconButton(
                                 icon: const Icon(Icons.edit_outlined, size: 20),
-                                onPressed: () =>
-                                    _showItemFormDialog(context, ref, existingItem: item),
+                                onPressed: () => _showItemFormDialog(
+                                  context,
+                                  ref,
+                                  existingItem: item,
+                                ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline_rounded,
-                                    size: 20, color: AppColors.error),
+                                icon: const Icon(
+                                  Icons.delete_outline_rounded,
+                                  size: 20,
+                                  color: AppColors.error,
+                                ),
                                 onPressed: () async {
-                                  await ref
-                                      .read(menuNotifierProvider.notifier)
-                                      .deleteItem(item.id);
+                                  final bool?
+                                  isConfirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext ctx) {
+                                      return Dialog(
+                                        shape: BeveledRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(5),
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 28,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(
+                                              ctx,
+                                            ).colorScheme.surface,
+                                            borderRadius: BorderRadius.circular(
+                                              24.0,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.12,
+                                                ),
+                                                blurRadius: 24,
+                                                offset: const Offset(0, 10),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Container(
+                                            width: 450,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: 70,
+                                                  height: 70,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red
+                                                        .withValues(alpha: 0.2),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons
+                                                        .delete_outline_rounded,
+                                                    color: Colors.red,
+                                                    size: 50,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 20),
+                                                const Text(
+                                                  'تأكيد الحذف',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: -0.5,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
+
+                                                // نص الرسالة
+                                                Text(
+                                                  'هل أنت متأكد من رغبتك في حذف هذا العنصر؟ لا يمكن التراجع عن هذه الخطوة.',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey.shade600,
+                                                    height: 1.5,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 20),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    OutlinedButton(
+                                                      style: OutlinedButton.styleFrom(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 14,
+                                                            ),
+                                                        side: BorderSide(
+                                                          color: Colors
+                                                              .grey
+                                                              .shade300,
+                                                        ),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                14,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () =>
+                                                          Navigator.of(
+                                                            ctx,
+                                                          ).pop(false),
+                                                      child: Text(
+                                                        'إلغاء',
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors
+                                                              .grey
+                                                              .shade700,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 20),
+                                                    ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor:
+                                                            Colors.red.shade600,
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        elevation: 0,
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 14,
+                                                            ),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                14,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(true);
+                                                      },
+                                                      child: const Text(
+                                                        'حذف',
+                                                        style: TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  if (isConfirmed == true) {
+                                    await ref
+                                        .read(menuNotifierProvider.notifier)
+                                        .deleteItem(item.id);
+                                    if (!context.mounted) return;
+
+                                    ScaffoldMessenger.of(context)
+                                      ..hideCurrentSnackBar()
+                                      ..showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons
+                                                    .check_circle_outline_rounded,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                'تم حذف "${item.name}" بنجاح',
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: AppColors.success,
+                                          behavior: SnackBarBehavior.floating,
+                                          elevation: 3,
+                                          margin: const EdgeInsets.all(16),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                  }
                                 },
                               ),
                             ],
